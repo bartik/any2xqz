@@ -1,6 +1,6 @@
 How to use.
 
-1) Get the pdf guides from SAP for the desired certification (if there are any).
+1) Get the pdf guides from SAP for the desired certification (if there are any, see "How to prepare" for course codes).
 2) Get the QuizFaber software. Extract and save an empty quiz in xqz format.
 3) Get a tool to convert pdf to txt (here pdftotext is used from poppler package)
 5) Convert pdfs to txt (e.g. C_TADM_23.bat)
