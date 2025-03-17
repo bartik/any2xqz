@@ -1,0 +1,10 @@
+<body><question type="1" category="Standard" include="True" weight="1" timetoanswer="0" textFormat="1" sortAns="False" putSeparator="True">
+	<text>In what profile should you change the number of background work processes? Choose the correct answers.</text>
+	<remark>The instance profile is the correct profile in this case, as settings in this profile only apply to the affected instance, and the number of work processes for an instance is defined here. In the default profile, you maintain parameters that apply to all instances or for the entire SAP system. The background profile does not exist. Read more about this in the course ADM100, Unit 1, lesson 2.</remark>
+	<score correct="1" wrong="0" blank="0" />
+	<answers type="1"><singleAns>False</singleAns>
+		<choice correct="False" TextFormat="1" pointsIn="1" pointsOut="0">Default profile</choice>
+		<choice correct="False" TextFormat="1" pointsIn="1" pointsOut="0">Background profile</choice>
+		<choice correct="True" TextFormat="1" pointsIn="1" pointsOut="0">Instance profile</choice>
+	</answers>
+</question></body>
