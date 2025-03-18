@@ -16,3 +16,7 @@ How to use.
 15) Download the updated file and insert all questions into the test.xqz file (withoud the <body> tag)
 16) Open the file in QuizFaber. Generate the quiz. If errors occur correct the question.
 17) The script does create question type 4 (QuizFaber specific) where appropriate (all the encountered cases are to define the correct order of activities)
+
+Helpful tools:
+1) https://convertio.co/pdf-txt/
+2) https://tools.pdf24.org/en/ocr-pdf
