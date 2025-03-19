@@ -50,7 +50,7 @@ FNR == 1 {
 }
 
 # Process only these sections of the file
-/Learning Assessment - Answers[[:space:]]*$/ {
+/Learning[[:space:]]*Assessment[[:space:]]*-[[:space:]]*Answers[[:space:]]*$/ {
 	processLines = 1
 	next
 }
@@ -292,7 +292,17 @@ function printQuestion()
 			print questionPrefix
 			printQuestionPostfix()
 			printPhrase()
-		} else if ((match(answers[1], /True/) && match(answers[2], /False/) && answerIndex == 2)||(match(question, /Determine whether this statement is true or false./))) {
+		} else if (match(question, /Determine whether this statement is true or false\./)) {
+			questionPrefix = sprintf(questionPrefixTemplate, 2, generateCategory())
+			print questionPrefix
+			# Sometimes there is no dot or question mark at the end of the previous sentence
+			lastSentence = "Determine whether this statement is true or false."
+			sub(lastSentence, "", question)
+			question = trim(question)
+			lastSentence = trim(lastSentence)
+			printQuestionPostfix()
+			print "\t" truefalsePrefix lastSentence truefalseSuffix
+		} else if (match(answers[1], /True/) && match(answers[2], /False/) && answerIndex == 2) {
 			questionPrefix = sprintf(questionPrefixTemplate, 2, generateCategory())
 			print questionPrefix
 			# Use a regular expression to match the last sentence starting with '. ' or '? ' for a True/False question
