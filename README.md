@@ -15,7 +15,7 @@ How to use.
 14) Alternatively use the pdftotext so that exports also the correct answers and modify the awk script to use that to generate the correct answers
 15) Download the updated file and insert all questions into the test.xqz file (withoud the <body> tag)
 16) Open the file in QuizFaber. Generate the quiz. If errors occur correct the question
-17) The script does create question type 4,3 and 2 (correct order, freetext and true/false) where appropriate.
+17) The script does create question type 4,3,2 and 1 (correct order, freetext,true/false and multiple choice) where appropriate.
 
 Helpful tools:
 1) https://convertio.co/pdf-txt/
