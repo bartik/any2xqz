@@ -11,11 +11,11 @@ How to use.
 10) Add the tag &lt;/body> as the last line of the test.out file
 11) Upload the test.out file to your favorit chatAI together with the prompt: "For the file test.out in xml format use the text in the tag remark to determine the correct answer. Set the attribute correct of the tag choice to true for the correct answers and set it to false for incorrect answers. Do this for each tag question in the file test.out where the type attribute has the value 1"
 12) Alternatively Upload the test.out file to your favorit chatAI together with the prompt: "For the file test.out use the question in the tag text to determine the correct answer. Set the attribute correct of the tag choice to true for the correct answers and set it to false for incorrect answers. Ignore the text in the tag remark. Do this for each tag question in the file test.out where the type attribute has the value 1." to see the answers your chatAI came up with
-13) Alternatively go through the pdf's and set the correct answers based on the Assessment - Answers chapters (after you have done 14, 15)
+13) Alternatively go through the pdf's and set the correct answers based on the Assessment - Answers chapters (after you have done 15, 16)
 14) Alternatively use the pdftotext so that exports also the correct answers and modify the awk script to use that to generate the correct answers
 15) Download the updated file and insert all questions into the test.xqz file (withoud the <body> tag)
 16) Open the file in QuizFaber. Generate the quiz. If errors occur correct the question
-17) The script does create question type 4 (QuizFaber specific) where appropriate (all the encountered cases are to define the correct order of activities)
+17) The script does create question type 4,3 and 2 (correct order, freetext and true/false) where appropriate.
 
 Helpful tools:
 1) https://convertio.co/pdf-txt/
