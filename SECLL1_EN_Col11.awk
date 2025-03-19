@@ -30,6 +30,7 @@ BEGIN {
 	truefalsePrefix = "<answers><sentence is=\"True\" TextFormat=\"1\">"
 	truefalseSuffix = "</sentence></answers>"
 	inFalse = 0
+	previousFilename = "Standard"
 }
 
 # Set the question prefix based on the file name
@@ -47,6 +48,7 @@ FNR == 1 {
 	answerIndex = 0
 	firstQuestion = 1
 	inFalse = 0
+	previousFilename = FILENAME
 }
 
 # Process only these sections of the file
@@ -218,7 +220,7 @@ function escapeHtml(str)
 # Function to create category name
 function generateCategory()
 {
-	n = split(FILENAME, parts, "/")
+	n = split(previousFilename, parts, "/")
 	filename = parts[n]
 	sub(/\.[^.]*$/, "", filename)
 	return filename
