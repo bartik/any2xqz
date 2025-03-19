@@ -2,13 +2,7 @@
 
 # Initialize variables
 BEGIN {
-	question = ""
-	explanation = ""
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 0
-	answerIndex = 0
-	processLines = 0
+	# Templates for the QuizFaber xml file
 	categoriesItemTemplate = "<Item Name=\"%s\" Description=\"\" MaxQuestForQuiz=\"9999\" IsRandom=\"False\" />\n"
 	categoriesItem = ""
 	questionPrefixTemplate = "<question type=\"%d\" category=\"%s\" include=\"True\" weight=\"1\" timetoanswer=\"0\" textFormat=\"1\" sortAns=\"False\" putSeparator=\"True\">"
@@ -29,25 +23,19 @@ BEGIN {
 	freetextSuffix = "</answers>"
 	truefalsePrefix = "<answers><sentence is=\"True\" TextFormat=\"1\">"
 	truefalseSuffix = "</sentence></answers>"
-	inFalse = 0
+	# Initialize variables
+	resetVariables("",0)
+	processLines = 0
 	previousFilename = "Standard"
 }
 
 # Set the question prefix based on the file name
 FNR == 1 {
 	# Print the last question of the previous file
-	if (NR > FNR) {
-		printQuestion()
-	}
+	if (NR > FNR) printQuestion()
 	categoriesItem = categoriesItem sprintf(categoriesItemTemplate, generateCategory())
-	question = ""
-	explanation = ""
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 0
-	answerIndex = 0
+	resetVariables("",0)
 	firstQuestion = 1
-	inFalse = 0
 	previousFilename = FILENAME
 }
 
@@ -80,68 +68,32 @@ processLines == 0 {
 }
 
 # Match lines that start with a number followed by a dot and space (question start)
-/^[[:space:]]*[1-9][0-9]*\. / || /^[[:space:]]*\.[[:space:]]+/ {
-	if (firstQuestion == 0) {
-		printQuestion()
-		question = ""
-		explanation = ""
-	}
-	question = $0
-	inQuestion = 1
-	inAnswer = 0
-	inExplanation = 0
-	answerIndex = 0
+/^[[:space:]]*[[:digit:]]*\.[[:space:]]+/ {
+	if (firstQuestion == 0) printQuestion()
+	resetVariables($0,1)
 	firstQuestion = 0
-	inFalse = 0
 	next
 }
 
 # Match lines that start with garbage followed by a letter (answer start)
 /^[[:space:]]*[\342\200\230aX]+[[:space:]]+[A-Z][[:space:]]+/ {
-	answerIndex++
-	answers[answerIndex] = $0
-	gsub(/^[[:space:]]*[\342\200\230aX]+[[:space:]]*/, "", answers[answerIndex])
-	gsub(/[[:space:]]+/, " ", answers[answerIndex])
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 1
+	addAnswer($0)
 	next
 }
 
 # Match lines starting with a digit and followed by a space
-/^[[:space:]]*[1-9\]\[|_]+[[:space:]]+/ {
-	answerIndex++
-	answers[answerIndex] = $0
-	gsub(/^[[:space:]]*[\]\[|_]+[[:space:]]*/, "", answers[answerIndex])
-	gsub(/[\]\[|_]+[[:space:]]*/, " ", answers[answerIndex])
-	gsub(/[[:space:]]+/, " ", answers[answerIndex])
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 1
+/^[[:space:]]*[[:digit:]\]\[|_]+[[:space:]]+/ {
+	addAnswer($0)
 	next
 }
 
 /[[:space:]]+True[[:space:]]*$/ || /^[[:space:]]*True[[:space:]]*$/ {
-	answerIndex++
-	answers[answerIndex] = $0
-	gsub(/[[:space:]]+/, " ", answers[answerIndex])
-	gsub(/^[[:space:]]*[\]\[|_]+[[:space:]]*/, "", answers[answerIndex])
-	gsub(/^[[:space:]]*\342\200\230a[[:space:]]*/, "", answers[answerIndex])
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 1
+	addAnswer($0)
 	next
 }
 
 /[[:space:]]+False[[:space:]]*$/ || /^[[:space:]]*False[[:space:]]*$/ {
-	answerIndex++
-	answers[answerIndex] = $0
-	gsub(/[[:space:]]+/, " ", answers[answerIndex])
-	gsub(/^[[:space:]]*[\]\[|_]+[[:space:]]*/, "", answers[answerIndex])
-	gsub(/^[[:space:]]*\342\200\230a[[:space:]]*/, "", answers[answerIndex])
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 1
+	addAnswer($0)
 	inFalse = 1
 	next
 }
@@ -156,12 +108,7 @@ processLines == 0 {
 
 # The position of this block matters. It must be always behind the False block
 /^[[:space:]]*[A-Z][[:space:]]+/ && inFalse == 0 {
-	answerIndex++
-	answers[answerIndex] = $0
-	gsub(/[[:space:]]+/, " ", answers[answerIndex])
-	inQuestion = 0
-	inAnswer = 0
-	inExplanation = 1
+	addAnswer($0)
 	next
 }
 
@@ -203,17 +150,15 @@ function escapeHtml(str)
 	gsub(/</, "\\&lt;", str)
 	gsub(/>/, "\\&gt;", str)
 	gsub(/'/, "\\&apos;", str)
-	#  \042 is the ASCII code for double quotation mark because syntax highligtning is not working with " properly
-	# 201C and 201D are the Unicode code points for left and right double quotation marks + dashes/quotes
+	# \042 is the ASCII code for double quotation mark because syntax highligtning is not working with " properly
 	gsub(/\042/, "\\&quot;/", str)
+	# 201C and 201D are the Unicode code points for left and right double quotation marks + dashes/quotes
 	gsub(/\342\200\234/, "\\&quot;", str)	# 201C
 	gsub(/\342\200\235/, "\\&quot;", str)	# 201D
 	gsub(/\342\200\223/, "-", str)	# 2013
 	gsub(/\342\200\224/, "-", str)	# 2014
 	gsub(/\342\200\231/, "\\&apos;", str)	# 2019
 	gsub(/\342\200\230/, "\\&apos;", str)	# 2018
-	#gsub(/\342\200\176/, "\\&deg;", str) # 00B0
-	#gsub(/\342\200\246/, "\\&hellip;", str) # 2026
 	return str
 }
 
@@ -243,20 +188,11 @@ function printAnswers()
 {
 	print "\t" answersPrefix
 	for (i = 1; i <= answerIndex; i++) {
-		gsub(/[[:space:]]+/, " ", answers[i])
 		gsub(/^[[:space:]]*[[:alpha:]][[:space:]]+/, "", answers[i])
-		answers[i] = trim(answers[i])
-		answers[i] = escapeHtml(answers[i])
+		answers[i] = sanitizeOutput(answers[i])
 		print "\t\t" choicePrefix answers[i] choiceSuffix
 	}
 	print "\t" answersSuffix
-}
-
-# Function to print the phrase
-function printFreeText()
-{
-	printf "\t%s", freetextPrefix
-	print freetextSuffix
 }
 
 # Function to print the phrase
@@ -265,9 +201,10 @@ function printPhrase()
 	printf "\t%s", phrasePrefix
 	for (i = 1; i <= answerIndex; i++) {
 		match(answers[i], /^[[:digit:]]+/, arr)
-		gsub(/^[[:digit:]]+/, "", answers[i])
 		firstNumber = arr[0]
 		csv = generateCsv(firstNumber, answerIndex)
+		gsub(/^[[:digit:]]+/, "", answers[i])
+		answers[i] = sanitizeOutput(answers[i])
 		print "[" csv "] " answers[i]
 	}
 	print phraseSuffix
@@ -276,18 +213,15 @@ function printPhrase()
 # Function to print the current question
 function printQuestion()
 {
-	# Normalize the question and explanation
-	gsub(/[[:space:]]+/, " ", question)
-	gsub(/[[:space:]]+/, " ", explanation)
-	gsub(/^[[:space:]]*[0-9]*\.[[:space:]]+/, "", question)
+	# Normalize & sanitize
+	gsub(/^[[:space:]]*[[:digit:]]*\.[[:space:]]+/, "", question)
+	question = sanitizeOutput(question)
 	gsub(/^[[:space:]]*You are correct[!]/, "", explanation)
 	gsub(/^[[:space:]]*Correct[.:!]/, "", explanation)
-	question = trim(question)
-	explanation = trim(explanation)
-	question = escapeHtml(question)
-	explanation = escapeHtml(explanation)
+	explanation = sanitizeOutput(explanation)
 	# Check if the question has already been seen
 	if (questionsSeen[question] != 1) {
+		questionsSeen[question] = 1
 		# Print the question in quizfaber format
 		if (match(answers[1], /^[[:digit:]]/)) {
 			questionPrefix = sprintf(questionPrefixTemplate, 4, generateCategory())
@@ -300,8 +234,8 @@ function printQuestion()
 			# Sometimes there is no dot or question mark at the end of the previous sentence
 			lastSentence = "Determine whether this statement is true or false."
 			sub(lastSentence, "", question)
-			question = trim(question)
 			lastSentence = trim(lastSentence)
+			question = trim(question)
 			printQuestionPostfix()
 			print "\t" truefalsePrefix lastSentence truefalseSuffix
 		} else if (match(answers[1], /True/) && match(answers[2], /False/) && answerIndex == 2) {
@@ -311,8 +245,8 @@ function printQuestion()
 			n = split(question, parts, /[;.?][[:space:]]+/)
 			lastSentence = parts[n]
 			sub(lastSentence, "", question)
-			question = trim(question)
 			lastSentence = trim(lastSentence)
+			question = trim(question)
 			printQuestionPostfix()
 			print "\t" truefalsePrefix lastSentence truefalseSuffix
 		} else if (answerIndex > 0) {
@@ -329,14 +263,13 @@ function printQuestion()
 				explanation = substr(question, RSTART + 2)
 				question = substr(question, 1, RSTART + 1)
 			}
-			question = trim(question)
 			explanation = trim(explanation)
+			question = trim(question)
 			printQuestionPostfix()
-			printFreeText()
+			print "\t" freetextPrefix freetextSuffix
 		}
 		print questionSuffix
 	}
-	questionsSeen[question] = 1
 }
 
 # Function to print the question postfix
@@ -355,4 +288,38 @@ function trim(str)
 	sub(/^[[:space:]]+/, "", str)
 	sub(/[[:space:]]+$/, "", str)
 	return str
+}
+
+# Function to sanitize the output
+function sanitizeOutput(str)
+{
+	gsub(/^[^[:alnum:][:space:]]+/,"",str)
+	gsub(/[[:space:]]+/, " ", str)
+	str = trim(str)
+	str = escapeHtml(str)
+	return str
+}
+
+# Function to add an answer to the answers array
+function addAnswer(answer)
+{
+	gsub(/[\]\[|]/, "", answer)
+	gsub(/^[[:space:]]*[_\342\200\230aX]+[[:space:]]+/, "", answer)
+	gsub(/[[:space:]]+/, " ", answer)
+	answers[++answerIndex] = answer
+	inQuestion = 0
+	inAnswer = 0
+	inExplanation = 1
+}
+
+# Function to reset variables
+function resetVariables(resetQuestion,resetInQuestion)
+{
+	question = resetQuestion
+	inQuestion = resetInQuestion
+	explanation = ""
+	inAnswer = 0
+	inExplanation = 0
+	answerIndex = 0
+	inFalse = 0
 }
