@@ -20,3 +20,5 @@ How to use.
 Helpful tools:
 1) https://convertio.co/pdf-txt/
 2) https://tools.pdf24.org/en/ocr-pdf
+3) https://github.com/oschwartz10612/poppler-windows
+4) https://www.quizfaber.com/index.php/en/
