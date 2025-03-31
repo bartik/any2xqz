@@ -16,6 +16,7 @@ How to use.
 15) Download the updated file and insert all questions into the test.xqz file (withoud the <body> tag)
 16) Open the file in QuizFaber. Generate the quiz. If errors occur correct the question
 17) The script does create question type 4,3,2 and 1 (correct order, freetext,true/false and multiple choice) where appropriate.
+18) You can use the InsertAnswers.py script to clean-up the questions and add the text with expected number of answers and a remark (if it does not exist) with a list of correct answers for questions of type=1
 
 Helpful tools:
 1) https://convertio.co/pdf-txt/
