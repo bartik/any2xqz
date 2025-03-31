@@ -1,19 +1,36 @@
 from xml.dom import minidom
 import re
 
+def remove_last_newline_for_siblings(dom, parent_tag, sibling_tag):
+    """
+    Removes the last newline character from all sibling tags of a given tag name.
+
+    Parameters:
+        dom (xml.dom.minidom.Document): The parsed XML DOM object.
+        parent_tag (str): The name of the parent tag containing the siblings.
+        sibling_tag (str): The name of the sibling tags to process.
+    """
+    # Iterate through all parent tags
+    for parent in dom.getElementsByTagName(parent_tag):
+        # Iterate through all sibling tags within the parent
+        for sibling in parent.getElementsByTagName(sibling_tag):
+            if sibling.firstChild:
+                # Remove the last newline character and strip whitespace
+                sibling_value = sibling.firstChild.nodeValue.rstrip("\n").strip()
+                sibling.firstChild.nodeValue = sibling_value
+
 def parse_and_add_tag(input_file, output_file):
     # Parse the XML file using minidom
     dom = minidom.parse(input_file)
     root = dom.documentElement
 
+    # Remove the last newline character from <text>, <remark>, and <choice> tags for all <question> tags
+    remove_last_newline_for_siblings(dom, "question", "text")
+    remove_last_newline_for_siblings(dom, "question", "remark")
+    remove_last_newline_for_siblings(dom, "question", "choice")
+
     # Iterate through all <question> tags
     for question in root.getElementsByTagName('question'):
-        # Remove the last newline character from the <choice> tag values for all <question> tags
-        for choice in question.getElementsByTagName('choice'):
-            if choice.firstChild:
-                choice_value = choice.firstChild.nodeValue.rstrip("\n").strip()
-                choice.firstChild.nodeValue = choice_value
-
         # Check if the question type is "1"
         if question.getAttribute('type') == '1':
             # Collect values of <choice> tags where correct="True"
@@ -66,6 +83,6 @@ def parse_and_add_tag(input_file, output_file):
 
 # Example usage
 if __name__ == "__main__":
-    input_file = r"c:\Test_XXXX.xqz"
-    output_file = r"c:\Test_XXXX_modified.xqz"
+    input_file = r"c:\Users\pbt01\Documents\Auto\C_SEC_XXXX.xqz"
+    output_file = r"c:\Users\pbt01\Documents\Auto\C_SEC_XXXX_modified.xqz"
     parse_and_add_tag(input_file, output_file)
