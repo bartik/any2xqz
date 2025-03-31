@@ -56,7 +56,7 @@ def parse_and_add_tag(input_file, output_file):
             text_value = text_value.replace("Choose the correct answers.", "").strip()
 
             # Check if the pattern "There are [1-9][0-9]* correct answers" exists
-            if not re.search(r"There are [1-9][0-9]* correct answers", text_value):
+            if not re.search(r"There are [0-9A-Za-z]+ correct answers", text_value):
                 # Use "is" for one correct answer and "are" for multiple correct answers
                 note_verb = "is" if correct_count_choices == 1 else "are"
                 updated_text = f"{text_value} Note: There {note_verb} {correct_count_choices} correct answer{'s' if correct_count_choices > 1 else ''} to this question."
