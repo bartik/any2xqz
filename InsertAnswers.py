@@ -68,6 +68,6 @@ def parse_and_add_tag(input_file, output_file):
 
 # Example usage
 if __name__ == "__main__":
-    input_file = r"c:\Users\pbt01\Documents\Auto\C_SEC_XXXX.xqz"
-    output_file = r"c:\Users\pbt01\Documents\Auto\C_SEC_XXXX_modified.xqz"
+    input_file = r"c:\Test_XXXX.xqz"
+    output_file = r"c:\Test_XXXX_modified.xqz"
     parse_and_add_tag(input_file, output_file)
