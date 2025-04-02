@@ -114,19 +114,19 @@ processLines == 0 {
 }
 
 # Match True/False answers
-/[[:space:]]+True[[:space:]]*$/ || /^[[:space:]]*True[[:space:]]*$/ {
+/[[:space:]]+True[*[:space:]]*$/ || /^[[:space:]]*True[*[:space:]]*$/ {
     addAnswer($0)
     next
 }
 
-/[[:space:]]+False[[:space:]]*$/ || /^[[:space:]]*False[[:space:]]*$/ {
+/[[:space:]]+False[*[:space:]]*$/ || /^[[:space:]]*False[*[:space:]]*$/ {
     addAnswer($0)
     inFalse = 1
     next
 }
 
 # Match lines that start with "You are correct" or "Correct." for the explanation (remark)
-/^[[:space:]]*You are correct/ || /^[[:space:]]*Correct[.:]/ {
+/^[[:space:]]*You are correct/ || /^[[:space:]]*Correct[.: ]+/ || /^[[:space:]]*Indeed[.: ]+/{
     explanation = $0
     inQuestion = 0
     inAnswer = 0
